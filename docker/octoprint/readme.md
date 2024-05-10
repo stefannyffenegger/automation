@@ -21,7 +21,7 @@ An application to control (usb) 3d-printers over the network.
 - Optionally: one webcam per 3d-printer (needs additional USB ports)
 - Recommended: ssh enabled on host (needed for ansible deployment)
 - Docker installed [manual install](https://docs.docker.com/engine/install/ubuntu/) / [ansible playbook](https://github.com/stefannyffenegger/automation/blob/main/ansible/pb_prompt_install-docker.yml)
-- Optionally: Portainer installed [manual install](https://docs.portainer.io/start/install-ce/server/docker/linux) / [(ansible playbook)](https://github.com/stefannyffenegger/automation/blob/main/ansible/pb_prompt_install-portainer.yml)
+- Optionally: Portainer installed [manual install](https://docs.portainer.io/start/install-ce/server/docker/linux) / [ansible playbook](https://github.com/stefannyffenegger/automation/blob/main/ansible/pb_prompt_install-portainer.yml)
 
 ## Deploy Octoprint with 2 printers
 
