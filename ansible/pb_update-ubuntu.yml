@@ -1,0 +1,24 @@
+# updates all specified ubuntu hosts
+# ansible-playbook -i inventory.yml pb_update_ubuntu.yml -kK
+- name: update ubuntu servers
+  #hosts: notebook01:notebook02 # example for specific hosts
+  #hosts: all # all hosts in inventory.yml (not compatible will skip/fail)
+  hosts: example_branch01 # all hosts of this group
+
+  tasks:
+    - name: update servers
+      become: true
+      ansible.builtin.apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #One day
+
+    - name: check if reboot required
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required_file
+
+    - name: reboot if required
+      become: true
+      reboot:
+      when: reboot_required_file.stat.exists == true

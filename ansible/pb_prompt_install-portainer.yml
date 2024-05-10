@@ -1,0 +1,43 @@
+# install portainer on a specific host. will be prompted
+# open portainer on https://<HOST_IP>:9443
+# set credentials as in wiki or document new ones!
+- name: Install Portainer
+  hosts: "{{target}}"
+  vars_prompt:
+    - name: target
+      prompt: "Provide host(s) or group(s) to run against"
+      private: no
+      default: all
+    - name: ansible_user
+      prompt: "User"
+      private: no
+    - name: ansible_password
+      prompt: "User SSH Password"
+      private: yes
+    - name: ansible_become_pass
+      prompt: "User sudo/become Password"
+      private: yes
+
+  tasks:
+    - name: Create Portainer volume
+      become: true
+      docker_volume:
+        name: portainer_data
+
+    - name: Deploy Portainer
+      become: true
+      docker_container:
+        name: portainer
+        image: portainer/portainer-ce:latest
+        restart: true
+        restart_policy: always
+        ports:
+          - "8000:8000"
+          - "9443:9443"
+        volumes:
+          - portainer_data:/data
+          - /var/run/docker.sock:/var/run/docker.sock
+
+    - name: Message
+      debug:
+        msg: Open Portainer at https://localhost:9443
