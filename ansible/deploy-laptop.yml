@@ -1,4 +1,4 @@
-# deploy new hosts and/or verifies configs and sw packages
+# deploys new hosts and verifies configs and sw packages
 # run with: ansible-playbook -i inventory.yml deploy-laptop.yml
 - name: deploy new laptop
   hosts: all
@@ -15,7 +15,7 @@
     arduino:
       url: https://downloads.arduino.cc/arduino-ide/arduino-ide_latest_Linux_64bit.AppImage
 
-# update host
+  # update host
   tasks:
     - name: update ubuntu hosts
       become: true
@@ -24,17 +24,17 @@
         update_cache: yes
         cache_valid_time: 86400 #One day
 
-# systemsetup.sh
+    # systemsetup.sh
     - name: create temp directory
-      ansible.builtin.file: 
+      ansible.builtin.file:
         state: directory
         path: "{{ directory.temp }}"
     - name: download deploy script
-      ansible.builtin.get_url: 
+      ansible.builtin.get_url:
         url: "{{ deployscript.url }}"
         dest: "{{ directory.temp }}/{{ deployscript.name }}"
         force: yes
-        mode: '777'
+        mode: "777"
     - name: run deploy script
       become: true
       ansible.builtin.expect:
@@ -43,26 +43,25 @@
           Password: "{{ ansible_password }}"
         timeout: 900
 
-# NoMachine/NXServer
-    - name: check if nomachine/nxserver exists
-      stat: path=/etc/init.d/nxserver
-      register: nxserver_status
+    # NoMachine/NXServer
+    - name: check if nomachine/nxserver service exists
+      ansible.builtin.service_facts:
     - name: download nomachine deb
-      when: nxserver_status.stat.exists
-      ansible.builtin.get_url: 
+      when: "'nxserver.service' not in services"
+      ansible.builtin.get_url:
         url: "{{ nomachine.url }}"
         dest: "{{ directory.temp }}/{{ nomachine.name }}"
     - name: install nomachine with dpkg
-      when: nxserver_status.stat.exists
+      when: "'nxserver.service' not in services"
       become: true
       ansible.builtin.shell: "dpkg -i {{ directory.temp }}/{{ nomachine.name }}"
 
-# Arduino IDE
+    # Arduino IDE
     - name: set dialout user permission for serial connections
       become: true
       ansible.builtin.shell: usermod -a -G dialout {{ ansible_user }}
     - name: download arduino ide appimage
-      ansible.builtin.get_url: 
+      ansible.builtin.get_url:
         url: "{{ arduino.url }}"
         dest: "{{ directory.desktop }}"
 
